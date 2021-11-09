@@ -44,9 +44,9 @@ static const char *TAG = "wifi station";
 static int s_retry_num = 0;
 
 ip4_addr_t gw;
-uint32_t ping_count = 25;  //how many pings per report
+uint32_t ping_count = 5;  //how many pings per report
 uint32_t ping_timeout = 1000; //mS till we consider it timed out
-uint32_t ping_delay = 500; //mS between pings
+uint32_t ping_delay = 50; //mS between pings
 uint32_t waiting_results = 0;
 
 esp_err_t pingResults(ping_target_id_t msgType, esp_ping_found * pf){
@@ -157,29 +157,34 @@ void wifi_csi_raw_cb(void *ctx, wifi_csi_info_t *info)
     size_t len = 0;
     wifi_pkt_rx_ctrl_t *rx_ctrl = &info->rx_ctrl;
     static uint32_t s_count = 0;
+    uint32_t time = esp_log_timestamp();
+    char * time_str = esp_log_system_timestamp();
 
-    if (!s_count) {
-        // ets_printf("type,id,mac,rssi,rate,sig_mode,mcs,bandwidth,smoothing,not_sounding,aggregation,stbc,fec_coding,sgi,noise_floor,ampdu_cnt,channel,secondary_channel,local_timestamp,ant,sig_len,rx_state,len,first_word,data\n");
-        len += snprintf(buff, sizeof(buff),"type,id,mac,rssi,rate,sig_mode,mcs,bandwidth,smoothing,not_sounding,aggregation,stbc,fec_coding,sgi,noise_floor,ampdu_cnt,channel,secondary_channel,local_timestamp,ant,sig_len,rx_state,len,first_word,data\n");
-    }
+    ets_printf("wifi_csi_raw_cb start %lu\n", time);
+    // ets_printf("wifi_csi_raw_cb start %s\n", time_str);
+    // if (!s_count) {
+    //     // ets_printf("type,id,mac,rssi,rate,sig_mode,mcs,bandwidth,smoothing,not_sounding,aggregation,stbc,fec_coding,sgi,noise_floor,ampdu_cnt,channel,secondary_channel,local_timestamp,ant,sig_len,rx_state,len,first_word,data\n");
+    //     len += snprintf(buff, sizeof(buff),"type,id,mac,rssi,rate,sig_mode,mcs,bandwidth,smoothing,not_sounding,aggregation,stbc,fec_coding,sgi,noise_floor,ampdu_cnt,channel,secondary_channel,local_timestamp,ant,sig_len,rx_state,len,first_word,data\n");
+    // }
 
-    len += snprintf(buff + len, sizeof(buff) - len,"CSI_DATA,%d," MACSTR ",%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d",
-               s_count++, MAC2STR(info->mac), rx_ctrl->rssi, rx_ctrl->rate, rx_ctrl->sig_mode,
-               rx_ctrl->mcs, rx_ctrl->cwb, rx_ctrl->smoothing, rx_ctrl->not_sounding,
-               rx_ctrl->aggregation, rx_ctrl->stbc, rx_ctrl->fec_coding, rx_ctrl->sgi,
-               rx_ctrl->noise_floor, rx_ctrl->ampdu_cnt, rx_ctrl->channel, rx_ctrl->secondary_channel,
-               rx_ctrl->timestamp, rx_ctrl->ant, rx_ctrl->sig_len, rx_ctrl->rx_state);
+    // len += snprintf(buff + len, sizeof(buff) - len,"CSI_DATA,%d," MACSTR ",%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d",
+    //            s_count++, MAC2STR(info->mac), rx_ctrl->rssi, rx_ctrl->rate, rx_ctrl->sig_mode,
+    //            rx_ctrl->mcs, rx_ctrl->cwb, rx_ctrl->smoothing, rx_ctrl->not_sounding,
+    //            rx_ctrl->aggregation, rx_ctrl->stbc, rx_ctrl->fec_coding, rx_ctrl->sgi,
+    //            rx_ctrl->noise_floor, rx_ctrl->ampdu_cnt, rx_ctrl->channel, rx_ctrl->secondary_channel,
+    //            rx_ctrl->timestamp, rx_ctrl->ant, rx_ctrl->sig_len, rx_ctrl->rx_state);
 
-    len += snprintf(buff + len, sizeof(buff) - len, ",%d,%d,\"[", info->len, info->first_word_invalid);
+    // len += snprintf(buff + len, sizeof(buff) - len, ",%d,%d,\"[", info->len, info->first_word_invalid);
 
-    int i = 0;
-    for (; i < info->len - 1; i++) {
-        len += snprintf(buff + len, sizeof(buff) - len, "%d,", info->buf[i]);
-    }
-    len += snprintf(buff + len, sizeof(buff) - len, "%d",info->buf[i]);
+    // int i = 0;
+    // for (; i < info->len - 1; i++) {
+    //     len += snprintf(buff + len, sizeof(buff) - len, "%d,", info->buf[i]);
+    // }
+    // len += snprintf(buff + len, sizeof(buff) - len, "%d",info->buf[i]);
 
-    len += snprintf(buff + len, sizeof(buff) - len, "]\"\n");
-    ets_printf("%s",buff);
+    // len += snprintf(buff + len, sizeof(buff) - len, "]\"\n");
+    // ets_printf("wifi_csi_raw_cb calling ets_printf in iteration: %d\n", s_count);
+    // ets_printf("%s",buff);
 }
 
 void app_main(void)
@@ -214,6 +219,7 @@ void app_main(void)
     esp_ping_set_target(PING_TARGET_IP_ADDRESS, &gw.addr, sizeof(uint32_t));
     esp_ping_set_target(PING_TARGET_RES_FN, &pingResults, sizeof(pingResults));
     ping_init();
+    printf("app_main is running\n");
     waiting_results = 1;
 
 }
