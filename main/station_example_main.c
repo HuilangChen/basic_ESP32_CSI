@@ -161,30 +161,30 @@ void wifi_csi_raw_cb(void *ctx, wifi_csi_info_t *info)
     char * time_str = esp_log_system_timestamp();
 
     ets_printf("wifi_csi_raw_cb start %lu\n", time);
-    // ets_printf("wifi_csi_raw_cb start %s\n", time_str);
-    // if (!s_count) {
-    //     // ets_printf("type,id,mac,rssi,rate,sig_mode,mcs,bandwidth,smoothing,not_sounding,aggregation,stbc,fec_coding,sgi,noise_floor,ampdu_cnt,channel,secondary_channel,local_timestamp,ant,sig_len,rx_state,len,first_word,data\n");
-    //     len += snprintf(buff, sizeof(buff),"type,id,mac,rssi,rate,sig_mode,mcs,bandwidth,smoothing,not_sounding,aggregation,stbc,fec_coding,sgi,noise_floor,ampdu_cnt,channel,secondary_channel,local_timestamp,ant,sig_len,rx_state,len,first_word,data\n");
-    // }
+    ets_printf("wifi_csi_raw_cb start %s\n", time_str);
+    if (!s_count) {
+        // ets_printf("type,id,mac,rssi,rate,sig_mode,mcs,bandwidth,smoothing,not_sounding,aggregation,stbc,fec_coding,sgi,noise_floor,ampdu_cnt,channel,secondary_channel,local_timestamp,ant,sig_len,rx_state,len,first_word,data\n");
+        len += snprintf(buff, sizeof(buff),"type,id,mac,rssi,rate,sig_mode,mcs,bandwidth,smoothing,not_sounding,aggregation,stbc,fec_coding,sgi,noise_floor,ampdu_cnt,channel,secondary_channel,local_timestamp,ant,sig_len,rx_state,len,first_word,data\n");
+    }
 
-    // len += snprintf(buff + len, sizeof(buff) - len,"CSI_DATA,%d," MACSTR ",%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d",
-    //            s_count++, MAC2STR(info->mac), rx_ctrl->rssi, rx_ctrl->rate, rx_ctrl->sig_mode,
-    //            rx_ctrl->mcs, rx_ctrl->cwb, rx_ctrl->smoothing, rx_ctrl->not_sounding,
-    //            rx_ctrl->aggregation, rx_ctrl->stbc, rx_ctrl->fec_coding, rx_ctrl->sgi,
-    //            rx_ctrl->noise_floor, rx_ctrl->ampdu_cnt, rx_ctrl->channel, rx_ctrl->secondary_channel,
-    //            rx_ctrl->timestamp, rx_ctrl->ant, rx_ctrl->sig_len, rx_ctrl->rx_state);
+    len += snprintf(buff + len, sizeof(buff) - len,"CSI_DATA,%d," MACSTR ",%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d",
+               s_count++, MAC2STR(info->mac), rx_ctrl->rssi, rx_ctrl->rate, rx_ctrl->sig_mode,
+               rx_ctrl->mcs, rx_ctrl->cwb, rx_ctrl->smoothing, rx_ctrl->not_sounding,
+               rx_ctrl->aggregation, rx_ctrl->stbc, rx_ctrl->fec_coding, rx_ctrl->sgi,
+               rx_ctrl->noise_floor, rx_ctrl->ampdu_cnt, rx_ctrl->channel, rx_ctrl->secondary_channel,
+               rx_ctrl->timestamp, rx_ctrl->ant, rx_ctrl->sig_len, rx_ctrl->rx_state);
 
-    // len += snprintf(buff + len, sizeof(buff) - len, ",%d,%d,\"[", info->len, info->first_word_invalid);
+    len += snprintf(buff + len, sizeof(buff) - len, ",%d,%d,\"[", info->len, info->first_word_invalid);
 
-    // int i = 0;
-    // for (; i < info->len - 1; i++) {
-    //     len += snprintf(buff + len, sizeof(buff) - len, "%d,", info->buf[i]);
-    // }
-    // len += snprintf(buff + len, sizeof(buff) - len, "%d",info->buf[i]);
+    int i = 0;
+    for (; i < info->len - 1; i++) {
+        len += snprintf(buff + len, sizeof(buff) - len, "%d,", info->buf[i]);
+    }
+    len += snprintf(buff + len, sizeof(buff) - len, "%d",info->buf[i]);
 
-    // len += snprintf(buff + len, sizeof(buff) - len, "]\"\n");
-    // ets_printf("wifi_csi_raw_cb calling ets_printf in iteration: %d\n", s_count);
-    // ets_printf("%s",buff);
+    len += snprintf(buff + len, sizeof(buff) - len, "]\"\n");
+    ets_printf("wifi_csi_raw_cb calling ets_printf in iteration: %d\n", s_count);
+    ets_printf("%s",buff);
 }
 
 void app_main(void)
